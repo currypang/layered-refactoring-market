@@ -8,11 +8,11 @@ import { updateResumeValidator } from '../middlewares/validators/updated-resume-
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
 
-const router = express.Router();
+const resumesRouter = express.Router();
 
 // 이력서 생성 API, accessToken 미들웨어로 인증, joi 미들웨어로 유효성 검사
 // validateAccessToken 미들웨어는 resumes 라우터에 공통으로 들어가므로 index.js에서 설정 가능
-router.post('/', createResumeValidator, async (req, res, next) => {
+resumesRouter.post('/', createResumeValidator, async (req, res, next) => {
   try {
     const { title, content } = req.body;
     const user = req.user;
@@ -34,7 +34,7 @@ router.post('/', createResumeValidator, async (req, res, next) => {
 });
 
 // 이력서 목록 조회 API, accessToken 미들웨어로 인증
-router.get('/list', async (req, res, next) => {
+resumesRouter.get('/list', async (req, res, next) => {
   try {
     const { id, role } = req.user;
     // 삼항연산자로 리팩토링, sort값이 없으면 'desc'
@@ -93,7 +93,7 @@ router.get('/list', async (req, res, next) => {
 });
 
 // 이력서 상세 조회 API, accessToken 미들웨어로 인증
-router.get('/:id', async (req, res, next) => {
+resumesRouter.get('/:id', async (req, res, next) => {
   try {
     // 이력서 ID, 유저정보
     const { id } = req.params;
@@ -143,7 +143,7 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 // 이력서 수정 API, accessToken 미들웨어로 인증
-router.put('/:id', updateResumeValidator, async (req, res, next) => {
+resumesRouter.put('/:id', updateResumeValidator, async (req, res, next) => {
   try {
     // prisma 메서드 사용위해 id 값 숫자형으로 변환
     const id = +req.params.id;
@@ -183,7 +183,7 @@ router.put('/:id', updateResumeValidator, async (req, res, next) => {
 });
 
 // 이력서 삭제 API, accessToken 미들웨어로 인증
-router.delete('/:id', async (req, res, next) => {
+resumesRouter.delete('/:id', async (req, res, next) => {
   try {
     const id = +req.params.id;
     const authorId = req.user.id;
@@ -212,55 +212,60 @@ router.delete('/:id', async (req, res, next) => {
 });
 
 // 이력서 지원 상태 변경 API, accessToken 미들웨어, 역할 인증 미들웨어로 인증, joi 미들웨어로 유효성 검사
-router.patch('/:id/status', requireRoles(USER_CONS.RECRUITER), updateResumeStatusValidator, async (req, res, next) => {
-  try {
-    // 전달받은 이력서 ID, 역할, 수정할 상태와 사유.
-    const id = +req.params.id;
-    const recruiterId = req.user.id;
-    const { status, reason } = req.body;
+resumesRouter.patch(
+  '/:id/status',
+  requireRoles(USER_CONS.RECRUITER),
+  updateResumeStatusValidator,
+  async (req, res, next) => {
+    try {
+      // 전달받은 이력서 ID, 역할, 수정할 상태와 사유.
+      const id = +req.params.id;
+      const recruiterId = req.user.id;
+      const { status, reason } = req.body;
 
-    await prisma.$transaction(async (tx) => {
-      const existedResume = await prisma.resume.findUnique({
-        where: { id },
-        // 이력서 정보가 없는 경우
-      });
-      if (!existedResume) {
-        next('notExistResume');
-      }
-      console.log('111');
-      // 이력서 지원 상태 수정
-      const updatedResume = await tx.resume.update({
-        where: { id },
-        data: {
-          status,
-        },
-      });
-      // throw new Error('일부러 만든 에러');
+      await prisma.$transaction(async (tx) => {
+        const existedResume = await prisma.resume.findUnique({
+          where: { id },
+          // 이력서 정보가 없는 경우
+        });
+        if (!existedResume) {
+          next('notExistResume');
+        }
+        console.log('111');
+        // 이력서 지원 상태 수정
+        const updatedResume = await tx.resume.update({
+          where: { id },
+          data: {
+            status,
+          },
+        });
+        // throw new Error('일부러 만든 에러');
 
-      // 이력서 로그 생성
-      const data = await tx.resumeLog.create({
-        data: {
-          recruiterId,
-          resumeId: existedResume.id,
-          oldStatus: existedResume.status,
-          newStatus: updatedResume.status,
-          reason,
-        },
-      });
+        // 이력서 로그 생성
+        const data = await tx.resumeLog.create({
+          data: {
+            recruiterId,
+            resumeId: existedResume.id,
+            oldStatus: existedResume.status,
+            newStatus: updatedResume.status,
+            reason,
+          },
+        });
 
-      return res.status(HTTP_STATUS.OK).json({
-        status: HTTP_STATUS.OK,
-        message: MESSAGES.RESUMES.UPDATE.STATUS.SUCCEED,
-        data,
+        return res.status(HTTP_STATUS.OK).json({
+          status: HTTP_STATUS.OK,
+          message: MESSAGES.RESUMES.UPDATE.STATUS.SUCCEED,
+          data,
+        });
       });
-    });
-  } catch (err) {
-    next(err);
-  }
-});
+    } catch (err) {
+      next(err);
+    }
+  },
+);
 
 // 이력서 로그 목록 조회 API, accessToken 미들웨어, 역할 인증 미들웨어로 인증
-router.get('/:id/logs', requireRoles(USER_CONS.RECRUITER), async (req, res, next) => {
+resumesRouter.get('/:id/logs', requireRoles(USER_CONS.RECRUITER), async (req, res, next) => {
   try {
     const id = +req.params.id;
     let data = await prisma.resumeLog.findMany({
@@ -295,4 +300,4 @@ router.get('/:id/logs', requireRoles(USER_CONS.RECRUITER), async (req, res, next
   }
 });
 
-export default router;
+export { resumesRouter };
