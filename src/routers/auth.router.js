@@ -9,49 +9,19 @@ import { ENV_CONS } from '../constants/env.constant.js';
 import { AUTH_CONS } from '../constants/auth.constant.js';
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
+import { AuthController } from '../controllers/auth.controller.js';
+import { AuthService } from '../services/auth.service.js';
+import { UsersRepository } from '../repositories/users.repository.js';
 
 const authRouter = express.Router();
 
-// 회원가입 API, joi 미들웨어로 유효성 검사, 에러 미들웨어로 에러처리
-authRouter.post('/sign-up', signUpValidator, async (req, res, next) => {
-  try {
-    const { email, name, password } = req.body;
-    const existUser = await prisma.user.findUnique({ where: { email } });
+const userRepository = new UsersRepository(prisma);
+const authService = new AuthService(userRepository);
+const authController = new AuthController(authService);
 
-    // 이메일 중복시 처리, return 없이도 정상 작동하지만 사용해서 prisma 에러 로그 방지
-    if (existUser) {
-      return next('existUser');
-    }
-    // dotenv 환경변수는 문자열로 반환되니 salt를 숫자형으로 변환한다.
-    const hashedPassword = await bcrypt.hash(password, +ENV_CONS.BCRYPT_ROUND); //동기방식으로 await 제외 bcrypt.hashSync도 가능
-    // DB에 회원정보 생성
-    let user = await prisma.user.create({
-      data: {
-        email,
-        name,
-        password: hashedPassword,
-      },
-      omit: {
-        password: true,
-      },
-      // select: {
-      //   id: true,
-      //   email: true,
-      //   name: true,
-      //   role: true,
-      //   createdAt: true,
-      //   updatedAt: true,
-      // },
-    });
-    // select로 선택대신 아래 방식가능
-    user.password = undefined;
-    return res
-      .status(HTTP_STATUS.CREATED)
-      .json({ status: HTTP_STATUS.CREATED, message: MESSAGES.AUTH.SIGN_UP.SUCCEED, data: user });
-  } catch (err) {
-    next(err);
-  }
-});
+// 회원가입 API, joi 미들웨어로 유효성 검사, 에러 미들웨어로 에러처리
+authRouter.post('/sign-up', signUpValidator, authController.signUpUser);
+
 // 로그인 API, joi 미들웨어로 유효성 검사
 authRouter.post('/sign-in', signInValidator, async (req, res, next) => {
   try {
