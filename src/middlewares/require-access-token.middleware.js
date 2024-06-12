@@ -42,7 +42,7 @@ export const validateAccessToken = async (req, res, next) => {
       }
     }
     // 유저 DB에 접근하는 usersRopository 클래스 메서드를 통해 쿼리하도록 리팩토링
-    const user = await usersRopository.findUser(decodedToken.id);
+    const user = await usersRopository.findUserById(decodedToken.id);
     if (!user) {
       return res
         .status(HTTP_STATUS.UNAUTHORIZED)

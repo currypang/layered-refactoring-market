@@ -1,5 +1,6 @@
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
+import { HttpError } from '../errors/http.error.js';
 // 본문에선 next넘겨주는 구문 없어도 사용해야 미들웨어로 받아올 수 있다. -> next 없으면 미들웨어로 인식하지 않는듯?
 // eslint-disable-next-line no-unused-vars
 export const errorHandler = (err, req, res, next) => {
@@ -7,8 +8,8 @@ export const errorHandler = (err, req, res, next) => {
   if (err.isJoi) {
     return res.status(HTTP_STATUS.BAD_REQUEST).json({ status: HTTP_STATUS.BAD_REQUEST, message: err.message });
   }
-  // users 회원가입 시 이메일 중복 처리
-  if (err === 'existUser') {
+  // 회원가입 시 이메일 중복 처리
+  if (err.message === 'existUser') {
     return res
       .status(HTTP_STATUS.CONFLICT)
       .json({ status: HTTP_STATUS.CONFLICT, message: MESSAGES.AUTH.COMMON.EMAIL.DUPLICATED });
