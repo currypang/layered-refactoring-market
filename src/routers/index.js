@@ -1,6 +1,6 @@
 import express from 'express';
 import { authRouter } from './auth.router.js';
-import resumesRouter from './resumes.router.js';
+import { resumesRouter } from './resumes.router.js';
 import { userRouter } from './users.router.js';
 import { validateAccessToken } from '../middlewares/require-access-token.middleware.js';
 
