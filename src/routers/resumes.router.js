@@ -7,31 +7,17 @@ import { updateResumeStatusValidator } from '../middlewares/validators/update-re
 import { updateResumeValidator } from '../middlewares/validators/updated-resume-validator.middleware.js';
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
+import { ResumesController } from '../controllers/resumes.controller.js';
+import { ResumesService } from '../services/resumes.service.js';
+import { ResumesRepository } from '../repositories/resumes.repository.js';
 
 const resumesRouter = express.Router();
+const resumesRepository = new ResumesRepository(prisma);
+const resumesService = new ResumesService(resumesRepository);
+const resumesController = new ResumesController(resumesService);
 
-// 이력서 생성 API, accessToken 미들웨어로 인증, joi 미들웨어로 유효성 검사
-// validateAccessToken 미들웨어는 resumes 라우터에 공통으로 들어가므로 index.js에서 설정 가능
-resumesRouter.post('/', createResumeValidator, async (req, res, next) => {
-  try {
-    const { title, content } = req.body;
-    const user = req.user;
-    const resume = await prisma.resume.create({
-      data: {
-        authorId: user.id,
-        title,
-        content,
-      },
-    });
-    return res.status(HTTP_STATUS.CREATED).json({
-      status: HTTP_STATUS.CREATED,
-      message: MESSAGES.RESUMES.CREATE.SUCCEED,
-      data: resume,
-    });
-  } catch (err) {
-    next(err);
-  }
-});
+// 이력서 생성 API
+resumesRouter.post('/', createResumeValidator, resumesController.createResume);
 
 // 이력서 목록 조회 API, accessToken 미들웨어로 인증
 resumesRouter.get('/list', async (req, res, next) => {
