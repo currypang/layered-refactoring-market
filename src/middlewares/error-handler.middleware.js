@@ -1,5 +1,4 @@
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
-import { MESSAGES } from '../constants/message.constant.js';
 import { HttpError } from '../errors/http.error.js';
 
 // 에러 처리 미들웨어. HttpError 클래스를 이용해 생성된 인스턴스로 처리된 에러들을 모아서 응답 하도록 리팩토링.

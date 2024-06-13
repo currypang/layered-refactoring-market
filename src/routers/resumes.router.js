@@ -24,35 +24,8 @@ resumesRouter.get('/list', resumesController.getAllResumes);
 resumesRouter.get('/:id', resumesController.getResume);
 // 이력서 수정 API
 resumesRouter.put('/:id', updateResumeValidator, resumesController.updateResume);
-
-// 이력서 삭제 API, accessToken 미들웨어로 인증
-resumesRouter.delete('/:id', async (req, res, next) => {
-  try {
-    const id = +req.params.id;
-    const authorId = req.user.id;
-
-    // 이력서 id, 작성자 id가 일치하는 이력서
-    const resume = await prisma.resume.findFirst({
-      where: { id, authorId },
-    });
-    // 이력서가 없거나, 작성자가 다를 때
-    if (!resume) {
-      return next('notExistResume');
-    }
-    // 이력서 삭제
-    const deletedResume = await prisma.resume.delete({
-      // delete 메서드는 행 전체를 삭제, select는 삭제 후 리턴되는 필드를 결정
-      where: { id, authorId },
-    });
-    return res.status(HTTP_STATUS.OK).json({
-      status: HTTP_STATUS.OK,
-      message: MESSAGES.RESUMES.DELETE.SUCCEED,
-      data: { id: deletedResume.id },
-    });
-  } catch (err) {
-    next(err);
-  }
-});
+// 이력서 삭제 API
+resumesRouter.delete('/:id', resumesController.deleteResume);
 
 // 이력서 지원 상태 변경 API, accessToken 미들웨어, 역할 인증 미들웨어로 인증, joi 미들웨어로 유효성 검사
 resumesRouter.patch(

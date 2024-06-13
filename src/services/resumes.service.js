@@ -71,4 +71,16 @@ export class ResumesService {
 
     return updatedResume;
   };
+
+  // 이력서 삭제 로직
+  deleteResume = async (id, authorId) => {
+    const condition = { id, authorId };
+    const resume = await this.resumesRepository.getResume(condition);
+
+    if (!resume) {
+      throw new HttpError.NotFound(MESSAGES.RESUMES.COMMON.NOT_FOUND);
+    }
+    const deletedResume = await this.resumesRepository.deleteResume(condition);
+    return deletedResume;
+  };
 }
