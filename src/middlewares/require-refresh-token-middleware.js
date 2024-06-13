@@ -54,8 +54,8 @@ export const validateRefreshToken = async (req, res, next) => {
       throw new HttpError.Unauthorized(MESSAGES.AUTH.COMMON.JWT.DISCARDED_TOKEN);
     }
     // token에서 받아온 id로 유저 유무 검증 - findUnique 사용
-    // 패스워드 제외하고 조회, 필드를 추가하는 select는 있지만 제외하는 메서드는 정식버전에서 없음. preview기능으로 omit제공, 스키마 파일에 옵션 넣어야함.
-    const user = await usersRepository.findUserById(decodedToken.id);
+    const condition = { id: decodedToken.id };
+    const user = await usersRepository.findUser(condition);
     // 일치하는 사용자 없을 경우
     if (!user) {
       throw new HttpError.Unauthorized(MESSAGES.AUTH.COMMON.JWT.NO_USER);

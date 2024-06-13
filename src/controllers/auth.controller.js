@@ -10,7 +10,6 @@ export class AuthController {
     try {
       const { email, name, password } = req.body;
       const createdUser = await this.authService.signUpUser(email, name, password);
-
       return res
         .status(HTTP_STATUS.CREATED)
         .json({ status: HTTP_STATUS.CREATED, message: MESSAGES.AUTH.SIGN_UP.SUCCEED, data: createdUser });

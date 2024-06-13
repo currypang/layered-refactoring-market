@@ -26,7 +26,7 @@ export class ResumesRepository {
   };
   // 이력서 상세 조회
   getResume = async (condition) => {
-    const resume = await this.prisma.resume.findFirst({
+    const resume = await this.prisma.resume.findUnique({
       where: condition,
       include: {
         author: true,

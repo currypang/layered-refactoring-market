@@ -19,7 +19,6 @@ export class ResumesService {
       ...(status && { status }),
     };
     let resumeList = await this.resumesRepository.getAllResumes(condition, sort);
-
     resumeList = resumeList.map((resume) => {
       return {
         id: resume.id,

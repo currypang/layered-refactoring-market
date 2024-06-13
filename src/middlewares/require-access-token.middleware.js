@@ -5,7 +5,7 @@ import { MESSAGES } from '../constants/message.constant.js';
 import { UsersRepository } from '../repositories/users.repository.js';
 import { HttpError } from '../errors/http.error.js';
 
-const usersRopository = new UsersRepository(prisma);
+const usersRepository = new UsersRepository(prisma);
 
 // accessToken 인증 미들웨어
 export const validateAccessToken = async (req, res, next) => {
@@ -39,7 +39,8 @@ export const validateAccessToken = async (req, res, next) => {
       }
     }
     // 유저 DB에 접근하는 usersRopository 클래스 메서드를 통해 쿼리하도록 리팩토링
-    const user = await usersRopository.findUserById(decodedToken.id);
+    const condition = { id: decodedToken.id };
+    const user = await usersRepository.findUser(condition);
     if (!user) {
       throw new HttpError.Unauthorized(MESSAGES.AUTH.COMMON.JWT.NO_USER);
     }
