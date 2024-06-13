@@ -1,4 +1,6 @@
+import { MESSAGES } from '../constants/message.constant.js';
 import { USER_CONS } from '../constants/user.constant.js';
+import { HttpError } from '../errors/http.error.js';
 
 export class ResumesService {
   constructor(resumesRepository) {
@@ -9,6 +11,7 @@ export class ResumesService {
     const resume = await this.resumesRepository.createResume(title, content, userId);
     return resume;
   };
+
   // 이력서 목록 조회 로직
   getAllResumes = async (id, role, sort, status) => {
     const condition = {
@@ -29,5 +32,27 @@ export class ResumesService {
       };
     });
     return resumeList;
+  };
+
+  // 이력서 상세 조회 로직
+  getResume = async (id, role, authorId) => {
+    const condition = {
+      ...(role !== USER_CONS.RECRUITER && { authorId }),
+      ...{ id: +id },
+    };
+    let resume = await this.resumesRepository.getResume(condition);
+    if (!resume) {
+      throw new HttpError.NotFound(MESSAGES.RESUMES.COMMON.NOT_FOUND);
+    }
+    resume = {
+      id: resume.id,
+      authorName: resume.author.name,
+      title: resume.title,
+      content: resume.content,
+      status: resume.status,
+      createdAt: resume.createdAt,
+      updatedAt: resume.updatedAt,
+    };
+    return resume;
   };
 }

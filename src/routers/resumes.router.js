@@ -20,57 +20,9 @@ const resumesController = new ResumesController(resumesService);
 resumesRouter.post('/', createResumeValidator, resumesController.createResume);
 // 이력서 목록 조회 API
 resumesRouter.get('/list', resumesController.getAllResumes);
+// 이력서 상세 조회 API
+resumesRouter.get('/:id', resumesController.getResume);
 
-// 이력서 상세 조회 API, accessToken 미들웨어로 인증
-resumesRouter.get('/:id', async (req, res, next) => {
-  try {
-    // 이력서 ID, 유저정보
-    const { id } = req.params;
-    const { role } = req.user;
-    const authorId = req.user.id;
-
-    // 리크루터는 모든 이력서에 접근이 가능
-    // validateAccessToken에서 넘어오는 id는 숫자형이라 상관없지만, path parameter로 받는건 문자열이라 숫자로 변환이 필요하다.
-    const condition = {
-      ...(role !== USER_CONS.RECRUITER && { authorId }),
-      ...{ id: +id },
-    };
-    // 이력서
-    let resume = await prisma.resume.findFirst({
-      where: condition,
-      include: {
-        author: true,
-      },
-    });
-    // 이력서 정보가 없는 경우
-    if (!resume) {
-      return next('notExistResume');
-    }
-    // 이력서 있으면 리턴
-    resume = {
-      id: resume.id,
-      authorName: resume.author.name,
-      title: resume.title,
-      content: resume.content,
-      status: resume.status,
-      createdAt: resume.createdAt,
-      updatedAt: resume.updatedAt,
-    };
-
-    // 아래 방식도 되지만 정렬상태를 컨트롤 할 수 ㅓㅂㅅ다.
-    // resume.authorName = resume.author.name;
-    // resume.authorId = undefined;
-    // resume.author = undefined;
-
-    return res.status(HTTP_STATUS.OK).json({
-      status: HTTP_STATUS.OK,
-      message: MESSAGES.RESUMES.READ_DETAIL.SUCCEED,
-      data: resume,
-    });
-  } catch (err) {
-    next(err);
-  }
-});
 // 이력서 수정 API, accessToken 미들웨어로 인증
 resumesRouter.put('/:id', updateResumeValidator, async (req, res, next) => {
   try {
