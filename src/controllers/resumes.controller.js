@@ -65,4 +65,18 @@ export class ResumesController {
       next(err);
     }
   };
+  // 이력서 삭제
+  deleteResume = async (req, res, next) => {
+    try {
+      const id = +req.params.id;
+      const authorId = req.user.id;
+
+      const deletedResume = await this.resumesService.deleteResume(id, authorId);
+      return res
+        .status(HTTP_STATUS.OK)
+        .json({ status: HTTP_STATUS.OK, message: MESSAGES.RESUMES.DELETE.SUCCEED, data: { id: deletedResume.id } });
+    } catch (err) {
+      next(err);
+    }
+  };
 }
