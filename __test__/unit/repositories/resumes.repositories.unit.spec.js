@@ -30,7 +30,7 @@ describe('resumesRepository Unit Test', () => {
     // GIVEN
     const currentDate = new Date();
     const { title, content, authorId } = dummyResumes[0];
-    const dummyResume = {
+    const expectedResult = {
       id: 7,
       authorId,
       title,
@@ -39,7 +39,7 @@ describe('resumesRepository Unit Test', () => {
       createdAt: currentDate,
       updatedAt: currentDate,
     };
-    mockPrisma.resume.create.mockReturnValue(dummyResume);
+    mockPrisma.resume.create.mockReturnValue(expectedResult);
     // WHEN
     const resume = await resumesRepository.createResume(title, content, authorId);
     // THEN
@@ -51,15 +51,15 @@ describe('resumesRepository Unit Test', () => {
         content,
       },
     });
-    expect(resume).toEqual(dummyResume);
+    expect(resume).toEqual(expectedResult);
   });
   // 이력서 목록 조회 테스트
   test('getAllResumes Method', async () => {
     // GIVEN
     const condition = { authorId: 1 };
     const sort = 'desc';
-    const dummyList = dummyResumes.filter((el) => el.authorId === 1);
-    mockPrisma.resume.findMany.mockReturnValue(dummyList);
+    const expectedResult = dummyResumes.filter((el) => el.authorId === 1);
+    mockPrisma.resume.findMany.mockReturnValue(expectedResult);
     // WHEN
     const resumeList = await resumesRepository.getAllResumes(condition, sort);
     // THEN
@@ -71,15 +71,15 @@ describe('resumesRepository Unit Test', () => {
         author: true,
       },
     });
-    expect(resumeList).toEqual(dummyList);
+    expect(resumeList).toEqual(expectedResult);
   });
 
   // 이력서 상세 조회 테스트
   test('getResume Method', async () => {
     // GIVEN
     const condition = { authorId: 1, id: 2 };
-    const dummyResume = dummyResumes.find((el) => el.authorId === 1 && el.id === 2);
-    mockPrisma.resume.findUnique.mockReturnValue(dummyResume);
+    const expectedResult = dummyResumes.find((el) => el.authorId === 1 && el.id === 2);
+    mockPrisma.resume.findUnique.mockReturnValue(expectedResult);
     // WHEN
     const resume = await resumesRepository.getResume(condition);
     // THEN
@@ -90,15 +90,15 @@ describe('resumesRepository Unit Test', () => {
         author: true,
       },
     });
-    expect(resume).toEqual(dummyResume);
+    expect(resume).toEqual(expectedResult);
   });
   // 이력서 수정 테스트
   test('updateResume Method', async () => {
     // GIVEN
     const condition = { id: 1 };
     const updatedContent = { title: 'Updated Title', content: 'Updated Content' };
-    const updatedResume = { ...dummyResumes[1], ...updatedContent };
-    mockPrisma.resume.update.mockReturnValue(updatedResume);
+    const expectedResult = { ...dummyResumes[1], ...updatedContent };
+    mockPrisma.resume.update.mockReturnValue(expectedResult);
     // WHEN
     const resume = await resumesRepository.updateResume(condition, updatedContent);
     // THEN
@@ -107,7 +107,7 @@ describe('resumesRepository Unit Test', () => {
       where: condition,
       data: updatedContent,
     });
-    expect(resume).toEqual(updatedResume);
+    expect(resume).toEqual(expectedResult);
   });
   // 이력서 삭제 테스트
   test('deleteResume Method', async () => {

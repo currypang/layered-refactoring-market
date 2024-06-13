@@ -22,7 +22,6 @@ export class ResumesRepository {
         author: true,
       },
     });
-    console.log(resumeList);
     return resumeList;
   };
   // 이력서 상세 조회

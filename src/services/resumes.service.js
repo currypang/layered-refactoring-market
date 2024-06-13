@@ -19,7 +19,6 @@ export class ResumesService {
       ...(status && { status }),
     };
     let resumeList = await this.resumesRepository.getAllResumes(condition, sort);
-
     resumeList = resumeList.map((resume) => {
       return {
         id: resume.id,
@@ -96,6 +95,7 @@ export class ResumesService {
   // 이력서 로그 목록 조회 로직
   getResumeLogs = async (id) => {
     let logList = await this.resumesRepository.getResumeLogs(id);
+    console.log(logList);
     logList = logList.map((log) => {
       return {
         id: log.id,

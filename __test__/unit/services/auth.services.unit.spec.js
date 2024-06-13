@@ -44,7 +44,6 @@ describe('authService Unit Test', () => {
     expect(mockUsersRepository.findUser).toHaveBeenCalledTimes(1);
     expect(mockUsersRepository.createUser).toHaveBeenCalledTimes(1);
     expect(mockUsersRepository.createUser).toHaveBeenCalledWith(email, name, hashedPassword);
-
     expect(signUpedUser).toEqual({
       id: 7,
       email,
