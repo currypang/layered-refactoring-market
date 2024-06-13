@@ -3,7 +3,7 @@ import { validateAccessToken } from '../middlewares/require-access-token.middlew
 import { UsersController } from '../controllers/users.controller.js';
 
 const userRouter = express.Router();
-// userRepository는 validateAccessToken에서 사용하여 제외
+// userRepository는 내정보 조회 API에서 validateAccessToken로만 처리 가능하여 제외
 const usersController = new UsersController();
 
 // 내 정보 조회 API
