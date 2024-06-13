@@ -5,8 +5,6 @@ import { USER_CONS } from '../constants/user.constant.js';
 import { createResumeValidator } from '../middlewares/validators/create-resume.validator.middleware.js';
 import { updateResumeStatusValidator } from '../middlewares/validators/update-resume-status.validator.middleware.js';
 import { updateResumeValidator } from '../middlewares/validators/updated-resume-validator.middleware.js';
-import { HTTP_STATUS } from '../constants/http-status.constant.js';
-import { MESSAGES } from '../constants/message.constant.js';
 import { ResumesController } from '../controllers/resumes.controller.js';
 import { ResumesService } from '../services/resumes.service.js';
 import { ResumesRepository } from '../repositories/resumes.repository.js';
@@ -33,40 +31,7 @@ resumesRouter.patch(
   updateResumeStatusValidator,
   resumesController.updateStatus,
 );
-// 이력서 로그 목록 조회 API, accessToken 미들웨어, 역할 인증 미들웨어로 인증
-resumesRouter.get('/:id/logs', requireRoles(USER_CONS.RECRUITER), async (req, res, next) => {
-  try {
-    const id = +req.params.id;
-    let data = await prisma.resumeLog.findMany({
-      where: {
-        resumeId: id,
-      },
-      include: {
-        recruiter: true,
-      },
-      orderBy: { createdAt: 'desc' },
-    });
-
-    data = data.map((log) => {
-      return {
-        id: log.id,
-        recruiterName: log.recruiter.name,
-        resumeId: log.resumeId,
-        oldStatus: log.oldStatus,
-        newStatus: log.newStatus,
-        reason: log.reason,
-        createdAt: log.createdAt,
-      };
-    });
-
-    res.status(HTTP_STATUS.OK).json({
-      status: HTTP_STATUS.OK,
-      message: MESSAGES.RESUMES.READ_LIST.LOG.SUCCEED,
-      data,
-    });
-  } catch (err) {
-    next(err);
-  }
-});
+// 이력서 로그 목록 조회 API,
+resumesRouter.get('/:id/logs', requireRoles(USER_CONS.RECRUITER), resumesController.getResumeLogs);
 
 export { resumesRouter };

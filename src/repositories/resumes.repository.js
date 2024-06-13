@@ -73,4 +73,17 @@ export class ResumesRepository {
     });
     return data;
   };
+  // 이력서 로그 목록 조회
+  getResumeLogs = async (id) => {
+    const logList = await this.prisma.resumeLog.findMany({
+      where: {
+        resumeId: id,
+      },
+      include: {
+        recruiter: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    return logList;
+  };
 }

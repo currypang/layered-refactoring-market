@@ -28,17 +28,7 @@ export const errorHandler = (err, req, res, next) => {
   if (err instanceof HttpError.InternalServerError) {
     return res.status(err.status).json({ status: err.status, message: err.message });
   }
-
-  // 나머지 에러는 API 리팩토링 하면서 정리
-
-  // 이력서 상세 목록 조회, 이력서 수정, 이력서 삭제, 이력서 지원 상태 변경 API에서 이력서 목록이 없을 경우
-
-  // 제목, 자기소개 둘다 없는 경우
-  if (err === 'emptyUpdateResume') {
-    return res
-      .status(HTTP_STATUS.BAD_REQUEST)
-      .json({ status: HTTP_STATUS.BAD_REQUEST, message: '수정할 정보를 입력해 주세요.' });
-  }
+  // 나머지 에러 처리
   return res
     .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
     .json({ status: HTTP_STATUS.INTERNAL_SERVER_ERROR, message: '현재 요청을 처리할 수 없습니다' });
