@@ -3,6 +3,7 @@ import { AuthController } from '../../../src/controllers/auth.controller.js';
 import { dummyUsers } from '../../dummies/users.dummy.js';
 import { HTTP_STATUS } from '../../../src/constants/http-status.constant.js';
 import { MESSAGES } from '../../../src/constants/message.constant.js';
+import { USER_CONS } from '../../../src/constants/user.constant.js';
 
 const mockAuthService = {
   signUpUser: jest.fn(),
@@ -41,14 +42,15 @@ describe('authController Unit Test', () => {
     const { email, name, password } = dummyUsers[0];
     const newUser = { email, name, password };
     mockRequest.body = newUser;
-    mockAuthService.signUpUser.mockReturnValue({
+    const expectedResult = {
       id: 5,
       email: 'spartan@spartacodingclub.kr',
       name: '스파르탄',
-      role: 'APPLICANT',
+      role: USER_CONS.APPLICANT,
       createdAt: currentDate,
       updatedAt: currentDate,
-    });
+    };
+    mockAuthService.signUpUser.mockReturnValue(expectedResult);
     // WHEN
     await authController.signUpUser(mockRequest, mockResponse, mockNext);
     // THEN
@@ -58,14 +60,7 @@ describe('authController Unit Test', () => {
     expect(mockResponse.json).toHaveBeenCalledWith({
       status: HTTP_STATUS.CREATED,
       message: MESSAGES.AUTH.SIGN_UP.SUCCEED,
-      data: {
-        id: 5,
-        email: 'spartan@spartacodingclub.kr',
-        name: '스파르탄',
-        role: 'APPLICANT',
-        createdAt: currentDate,
-        updatedAt: currentDate,
-      },
+      data: expectedResult,
     });
   });
 

@@ -5,6 +5,7 @@ import { dummyUsers } from '../../dummies/users.dummy.js';
 import { HTTP_STATUS } from '../../../src/constants/http-status.constant.js';
 import { MESSAGES } from '../../../src/constants/message.constant.js';
 import { USER_CONS } from '../../../src/constants/user.constant.js';
+import { RESUME_CONS } from '../../../src/constants/resume.constant.js';
 
 const mockResumesService = {
   createResume: jest.fn(),
@@ -52,7 +53,7 @@ describe('TemplateController Unit Test', () => {
       authorId: user.id,
       title,
       content,
-      status: 'APPLY',
+      status: RESUME_CONS.RESUME_STATUS.APPLY,
       createdAt: currentDate,
       updatedAt: currentDate,
       author: user,
@@ -165,7 +166,7 @@ describe('TemplateController Unit Test', () => {
     // GIVEN
     const resume = dummyResumes[1];
     const recruiter = dummyUsers[3];
-    const status = 'PASS';
+    const status = RESUME_CONS.RESUME_STATUS.PASS;
     const reason = '1차 면접 합격';
     const updatedStatus = { id: resume.id, newStatus: status, oldStatus: resume.status, reason };
     mockRequest.params = { id: resume.id };
@@ -194,8 +195,8 @@ describe('TemplateController Unit Test', () => {
         id: 1,
         recruiterName: 'Recruiter',
         resumeId: resume.id,
-        oldStatus: 'APPLY',
-        newStatus: 'PASS',
+        oldStatus: RESUME_CONS.RESUME_STATUS.APPLY,
+        newStatus: RESUME_CONS.RESUME_STATUS.PASS,
         reason: '코딩 테스트 통과',
         createdAt: currentDate,
       },

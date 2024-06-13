@@ -2,6 +2,7 @@ import { jest, describe, test, expect, beforeEach } from '@jest/globals';
 import { UsersController } from '../../../src/controllers/users.controller.js';
 import { HTTP_STATUS } from '../../../src/constants/http-status.constant.js';
 import { MESSAGES } from '../../../src/constants/message.constant.js';
+import { USER_CONS } from '../../../src/constants/user.constant.js';
 
 const mockRequest = {
   user: jest.fn(),
@@ -34,7 +35,7 @@ describe('usersController Unit Test', () => {
       id: 1,
       email: 'recruiter5@gomail.com',
       name: '포포비치',
-      role: 'RECRUITER',
+      role: USER_CONS.RECRUITER,
       createdAt: currentDate,
       updatedAt: currentDate,
     };

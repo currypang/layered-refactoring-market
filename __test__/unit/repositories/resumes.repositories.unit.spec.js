@@ -1,6 +1,7 @@
 import { beforeEach, describe, jest, test, expect } from '@jest/globals';
 import { ResumesRepository } from '../../../src/repositories/resumes.repository.js';
 import { dummyResumes } from '../../dummies/resume.dummy.js';
+import { RESUME_CONS } from '../../../src/constants/resume.constant.js';
 
 const mockPrisma = {
   resume: {
@@ -33,7 +34,7 @@ describe('resumesRepository Unit Test', () => {
       authorId,
       title,
       content,
-      status: 'APPLY',
+      status: RESUME_CONS.RESUME_STATUS.APPLY,
       createdAt: currentDate,
       updatedAt: currentDate,
     };
@@ -127,9 +128,9 @@ describe('resumesRepository Unit Test', () => {
     const currentDate = new Date();
     const id = 1;
     const recruiterId = 1;
-    const newStatus = 'PASS';
-    const oldStatus = 'APPLY';
-    const reason = 'Review passed';
+    const newStatus = RESUME_CONS.RESUME_STATUS.PASS;
+    const oldStatus = RESUME_CONS.RESUME_STATUS.APPLY;
+    const reason = '코드 테스트 통과';
     const log = {
       id: 1,
       recruiterId,
@@ -174,9 +175,9 @@ describe('resumesRepository Unit Test', () => {
         id: 1,
         recruiterId: 1,
         resumeId: id,
-        oldStatus: 'APPLY',
-        newStatus: 'PASS',
-        reason: 'Review passed',
+        oldStatus: RESUME_CONS.RESUME_STATUS.APPLY,
+        newStatus: RESUME_CONS.RESUME_STATUS.PASS,
+        reason: '코드 테스트 통과',
         createdAt: currentDate,
         recruiter: { id: 1, name: 'Recruiter' },
       },
@@ -184,9 +185,9 @@ describe('resumesRepository Unit Test', () => {
         id: 2,
         recruiterId: 1,
         resumeId: id,
-        oldStatus: 'PASS',
-        newStatus: 'FINAL_PASS',
-        reason: 'Review2 passed',
+        oldStatus: RESUME_CONS.RESUME_STATUS.PASS,
+        newStatus: RESUME_CONS.RESUME_STATUS.FINAL_PASS,
+        reason: '면접 통과',
         createdAt: currentDate,
         recruiter: { id: 1, name: 'Recruiter' },
       },

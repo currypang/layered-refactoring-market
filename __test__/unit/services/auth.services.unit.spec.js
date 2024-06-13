@@ -1,9 +1,10 @@
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import { jest, describe, test, expect, beforeEach } from '@jest/globals';
 import { AuthService } from '../../../src/services/auth.service.js';
 import { dummyUsers } from '../../dummies/users.dummy.js';
 import { MESSAGES } from '../../../src/constants/message.constant.js';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import { USER_CONS } from '../../../src/constants/user.constant.js';
 
 const mockUsersRepository = {
   findUser: jest.fn(),
@@ -33,7 +34,7 @@ describe('authService Unit Test', () => {
       email,
       name,
       password: hashedPassword,
-      role: 'APPLICANT',
+      role: USER_CONS.APPLICANT,
       createdAt: currentDate,
       updatedAt: currentDate,
     });
@@ -48,7 +49,7 @@ describe('authService Unit Test', () => {
       id: 7,
       email,
       name,
-      role: 'APPLICANT',
+      role: USER_CONS.APPLICANT,
       createdAt: currentDate,
       updatedAt: currentDate,
     });

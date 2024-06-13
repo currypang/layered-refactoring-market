@@ -3,6 +3,7 @@ import { ResumesService } from '../../../src/services/resumes.service.js';
 import { dummyResumes } from '../../dummies/resume.dummy.js';
 import { USER_CONS } from '../../../src/constants/user.constant.js';
 import { MESSAGES } from '../../../src/constants/message.constant.js';
+import { RESUME_CONS } from '../../../src/constants/resume.constant.js';
 
 const mockResumesRepository = {
   createResume: jest.fn(),
@@ -39,7 +40,7 @@ describe('resumesService Unit Test', () => {
     const id = 1;
     const role = USER_CONS.APPLICANT;
     const sort = 'desc';
-    const status = 'APPLY';
+    const status = RESUME_CONS.RESUME_STATUS.APPLY;
     const expectedResult = [dummyResumes[1], dummyResumes[5]];
     mockResumesRepository.getAllResumes.mockReturnValue(expectedResult);
     // WHEN
@@ -67,7 +68,7 @@ describe('resumesService Unit Test', () => {
     const id = 100;
     const role = USER_CONS.RECRUITER;
     const sort = 'desc';
-    const status = 'APPLY';
+    const status = RESUME_CONS.RESUME_STATUS.APPLY;
     const expectedResult = [dummyResumes[1], dummyResumes[3], dummyResumes[5]];
     mockResumesRepository.getAllResumes.mockReturnValue(expectedResult);
 
@@ -194,7 +195,7 @@ describe('resumesService Unit Test', () => {
     // GIVEN
     const { id, status: oldStatus } = dummyResumes[1];
     const recruiterId = 100;
-    const newStatus = 'INTERVIEW';
+    const newStatus = RESUME_CONS.RESUME_STATUS.INTERVIEW1;
     const reason = '코딩테스트 합격';
     const existingResume = dummyResumes[1];
     const createdLog = { id, recruiterId, resumeId: id, oldStatus, newStatus, reason };
@@ -219,14 +220,14 @@ describe('resumesService Unit Test', () => {
         id: 2,
         recruiterId: 1,
         resumeId: 3,
-        oldStatus: 'PASS',
-        newStatus: 'INTERVIEW2',
+        oldStatus: RESUME_CONS.RESUME_STATUS.PASS,
+        newStatus: RESUME_CONS.RESUME_STATUS.INTERVIEW2,
         reason: '코테2 통과',
         createdAt: currentDate,
         recruiter: {
           id: 1,
           name: '포포비치',
-          role: 'RECRUITER',
+          role: USER_CONS.RECRUITER,
           createdAt: currentDate,
         },
       },
