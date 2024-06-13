@@ -1,16 +1,18 @@
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { AUTH_CONS } from '../constants/auth.constant.js';
 import { ENV_CONS } from '../constants/env.constant.js';
 import { HttpError } from '../errors/http.error.js';
 import { MESSAGES } from '../constants/message.constant.js';
 
 export class AuthService {
   // userRepository를 통해 DB에 접근
-  constructor(userRepository) {
-    this.userRepository = userRepository;
+  constructor(usersRepository) {
+    this.usersRepository = usersRepository;
   }
-
+  // 회원 가입 로직
   signUpUser = async (email, name, password) => {
-    const existUser = await this.userRepository.findUserByEmail(email);
+    const existUser = await this.usersRepository.findUserByEmail(email);
 
     if (existUser) {
       // 생성된 HttpError.Conflict 인스턴스가 controller catch문의 err로 전달됨
@@ -18,9 +20,31 @@ export class AuthService {
       throw new HttpError.Conflict(MESSAGES.AUTH.COMMON.EMAIL.DUPLICATED);
     }
     const hashedPassword = await bcrypt.hash(password, +ENV_CONS.BCRYPT_ROUND);
-    const createdUser = await this.userRepository.createUser(email, name, hashedPassword);
+    const createdUser = await this.usersRepository.createUser(email, name, hashedPassword);
     // 비밀번호 제외한 나머지 정보 controller에 전달
     delete createdUser.password;
     return createdUser;
+  };
+  // 로그인 로직
+  signInUser = async (email, password) => {
+    const user = await this.usersRepository.findUserByEmail(email);
+    //이메일로 조회되지 않거나 비밀번호가 일치하지 앟는 경우
+    const isValidUser = user && (await bcrypt.compare(password, user.password));
+    if (!isValidUser) {
+      throw new HttpError.Unauthorized(MESSAGES.AUTH.COMMON.UNAUTHORIZED);
+    }
+    // accessToken 생성
+    const accessToken = jwt.sign({ id: user.id }, ENV_CONS.ACCESS_TOKEN_KEY, {
+      expiresIn: AUTH_CONS.ACCESS_EXPIRE_TIME,
+    });
+
+    // refreshToken 생성
+    const refreshToken = jwt.sign({ id: user.id }, ENV_CONS.REFRESH_TOKEN_KEY, {
+      expiresIn: AUTH_CONS.REFRESH_EXPIRE_TIME,
+    });
+    // 리프레쉬 토큰 해쉬한번 더하기
+    const hashedRefreshToken = bcrypt.hashSync(refreshToken, ENV_CONS.BCRYPT_ROUND);
+    await this.usersRepository.upsertRefreshToken(user.id, hashedRefreshToken);
+    return { accessToken, refreshToken };
   };
 }

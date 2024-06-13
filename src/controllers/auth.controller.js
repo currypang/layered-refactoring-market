@@ -17,4 +17,16 @@ export class AuthController {
       next(err);
     }
   };
+  signInUser = async (req, res, next) => {
+    try {
+      const { email, password } = req.body;
+      const tokens = await this.authService.signInUser(email, password);
+
+      return res
+        .status(HTTP_STATUS.OK)
+        .json({ status: HTTP_STATUS.OK, message: MESSAGES.AUTH.SIGN_IN.SUCCEED, data: tokens });
+    } catch (err) {
+      next(err);
+    }
+  };
 }

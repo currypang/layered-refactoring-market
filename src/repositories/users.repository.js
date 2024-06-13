@@ -28,4 +28,12 @@ export class UsersRepository {
     });
     return createdUser;
   };
+  // refreshToken 생성, 업데이트
+  upsertRefreshToken = async (userId, hashedRefreshToken) => {
+    await this.prisma.refreshToken.upsert({
+      where: { userId },
+      update: { refreshToken: hashedRefreshToken },
+      create: { userId, refreshToken: hashedRefreshToken },
+    });
+  };
 }
