@@ -69,7 +69,6 @@ export class AuthService {
   // 로그 아웃 로직
   signOut = async (userId) => {
     const deletedUser = await this.usersRepository.deleteRefreshToken(userId);
-    console.log(deletedUser);
-    return deletedUser.userId;
+    return deletedUser ? deletedUser.id : null;
   };
 }

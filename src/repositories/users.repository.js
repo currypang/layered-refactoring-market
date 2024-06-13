@@ -44,7 +44,6 @@ export class UsersRepository {
         refreshToken: null,
       },
     });
-    console.log(deletedUser);
     return deletedUser;
   };
 }

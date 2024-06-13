@@ -2,8 +2,6 @@ import { beforeEach, describe, jest, test, expect } from '@jest/globals';
 import { UsersRepository } from '../../../src/repositories/users.repository.js';
 import { dummyUsers } from '../../dummies/users.dummy.js';
 
-// TODO: template 이라고 되어 있는 부분을 다 올바르게 수정한 후 사용해야 합니다.
-
 const mockPrisma = {
   user: {
     create: jest.fn(),
@@ -27,7 +25,7 @@ describe('users Repository Unit Test', () => {
     // GIVEN
     const { email, name, password } = dummyUsers[0];
     const currentDate = new Date();
-    mockPrisma.user.create.mockResolvedValue({
+    mockPrisma.user.create.mockReturnValue({
       id: 1,
       email,
       password,
@@ -61,7 +59,7 @@ describe('users Repository Unit Test', () => {
     const userId = 1;
     const condition = { id: userId };
     const user = dummyUsers.find((el) => el.id === userId);
-    mockPrisma.user.findUnique.mockResolvedValue(user);
+    mockPrisma.user.findUnique.mockReturnValue(user);
     // WHEN
     const searchedUser = await usersRepository.findUser(condition);
     // THEN
@@ -91,7 +89,7 @@ describe('users Repository Unit Test', () => {
     // GIVEN
     const userId = 2;
     const currentDate = new Date();
-    mockPrisma.refreshToken.findUnique.mockResolvedValue({
+    mockPrisma.refreshToken.findUnique.mockReturnValue({
       id: 1,
       userId: 2,
       refreshToken: '$2b$10$ZMjVozX6yV3zTPYBNBPwVuwmE7/y6UprRMGTufeIWiNkwg1ejohA2',
@@ -119,7 +117,7 @@ describe('users Repository Unit Test', () => {
     // GIVEN
     const userId = 5;
     const currentDate = new Date();
-    mockPrisma.refreshToken.update.mockResolvedValue({
+    mockPrisma.refreshToken.update.mockReturnValue({
       id: 4,
       userId: 5,
       refreshToken: null,
