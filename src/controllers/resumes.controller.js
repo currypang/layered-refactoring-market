@@ -79,4 +79,20 @@ export class ResumesController {
       next(err);
     }
   };
+  // 이력서 지원 상태 변경
+  updateStatus = async (req, res, next) => {
+    try {
+      // 전달받은 이력서 ID, 역할, 수정할 상태와 사유.
+      const id = +req.params.id;
+      const recruiterId = req.user.id;
+      const { status, reason } = req.body;
+
+      const data = await this.resumesService.updateStatus(id, recruiterId, status, reason);
+      return res
+        .status(HTTP_STATUS.OK)
+        .json({ status: HTTP_STATUS.OK, message: MESSAGES.RESUMES.UPDATE.STATUS.SUCCEED, data });
+    } catch (err) {
+      next(err);
+    }
+  };
 }

@@ -83,4 +83,14 @@ export class ResumesService {
     const deletedResume = await this.resumesRepository.deleteResume(condition);
     return deletedResume;
   };
+  // 이력서 상태 변경 로직
+  updateStatus = async (id, recruiterId, status, reason) => {
+    const condition = { id };
+    const existedResume = await this.resumesRepository.getResume(condition);
+    if (!existedResume) {
+      throw new HttpError.NotFound(MESSAGES.RESUMES.COMMON.NOT_FOUND);
+    }
+    const data = await this.resumesRepository.updateStatus(id, recruiterId, status, existedResume.status, reason);
+    return data;
+  };
 }
