@@ -50,7 +50,7 @@ describe('authController Unit Test', () => {
       updatedAt: currentDate,
     });
     // WHEN
-    await authController.signUpUser(mockRequest, mockResponse, mockRequest);
+    await authController.signUpUser(mockRequest, mockResponse, mockNext);
     // THEN
     expect(mockAuthService.signUpUser).toHaveBeenCalledWith(newUser.email, newUser.name, newUser.password);
     expect(mockAuthService.signUpUser).toHaveBeenCalledTimes(1);

@@ -3,7 +3,6 @@ import { ResumesService } from '../../../src/services/resumes.service.js';
 import { dummyResumes } from '../../dummies/resume.dummy.js';
 import { USER_CONS } from '../../../src/constants/user.constant.js';
 import { MESSAGES } from '../../../src/constants/message.constant.js';
-// TODO: template 이라고 되어 있는 부분을 다 올바르게 수정한 후 사용해야 합니다.
 
 const mockResumesRepository = {
   createResume: jest.fn(),
@@ -46,7 +45,6 @@ describe('resumesService Unit Test', () => {
     // WHEN
     const resumeList = await resumesService.getAllResumes(id, role, sort, status);
     // THEN
-    console.log(resumeList);
     expect(mockResumesRepository.getAllResumes).toHaveBeenCalledTimes(1);
     expect(mockResumesRepository.getAllResumes).toHaveBeenCalledWith({ authorId: id, status }, sort);
     expect(resumeList).toEqual(
@@ -162,8 +160,8 @@ describe('resumesService Unit Test', () => {
     // GIVEN
     const { id, authorId } = dummyResumes[1];
     const existingResume = dummyResumes[1];
-    mockResumesRepository.getResume.mockResolvedValue(existingResume);
-    mockResumesRepository.deleteResume.mockResolvedValue(existingResume);
+    mockResumesRepository.getResume.mockReturnValue(existingResume);
+    mockResumesRepository.deleteResume.mockReturnValue(existingResume);
     // WHEN
     const deletedResume = await resumesService.deleteResume(id, authorId);
     // THEN
@@ -178,7 +176,7 @@ describe('resumesService Unit Test', () => {
   test('deleteResume Method Error', async () => {
     // GIVEN
     const { id, authorId } = dummyResumes[1];
-    mockResumesRepository.getResume.mockResolvedValue(null);
+    mockResumesRepository.getResume.mockReturnValue(null);
     try {
       // WHEN
       await resumesService.deleteResume(id, authorId);
@@ -200,8 +198,8 @@ describe('resumesService Unit Test', () => {
     const reason = '코딩테스트 합격';
     const existingResume = dummyResumes[1];
     const createdLog = { id, recruiterId, resumeId: id, oldStatus, newStatus, reason };
-    mockResumesRepository.getResume.mockResolvedValue(existingResume);
-    mockResumesRepository.updateStatus.mockResolvedValue(createdLog);
+    mockResumesRepository.getResume.mockReturnValue(existingResume);
+    mockResumesRepository.updateStatus.mockReturnValue(createdLog);
     // WHEN
     const log = await resumesService.updateStatus(id, recruiterId, newStatus, reason);
     // THEN
@@ -233,7 +231,7 @@ describe('resumesService Unit Test', () => {
         },
       },
     ];
-    mockResumesRepository.getResumeLogs.mockResolvedValue(expectedResult);
+    mockResumesRepository.getResumeLogs.mockReturnValue(expectedResult);
     // WHEN
     const logs = await resumesService.getResumeLogs(id);
     // THEN

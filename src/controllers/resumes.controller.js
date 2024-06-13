@@ -103,7 +103,7 @@ export class ResumesController {
       const logList = await this.resumesService.getResumeLogs(id);
       return res
         .status(HTTP_STATUS.OK)
-        .json({ status: HTTP_STATUS.OK, message: MESSAGES.RESUMES.READ_LIST.LOG.SUCCEED, logList });
+        .json({ status: HTTP_STATUS.OK, message: MESSAGES.RESUMES.READ_LIST.LOG.SUCCEED, data: logList });
     } catch (err) {
       next(err);
     }

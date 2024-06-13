@@ -2,8 +2,6 @@ import { beforeEach, describe, jest, test, expect } from '@jest/globals';
 import { ResumesRepository } from '../../../src/repositories/resumes.repository.js';
 import { dummyResumes } from '../../dummies/resume.dummy.js';
 
-// TODO: template 이라고 되어 있는 부분을 다 올바르게 수정한 후 사용해야 합니다.
-
 const mockPrisma = {
   resume: {
     create: jest.fn(),
@@ -193,7 +191,7 @@ describe('resumesRepository Unit Test', () => {
         recruiter: { id: 1, name: 'Recruiter' },
       },
     ];
-    mockPrisma.resumeLog.findMany.mockResolvedValue(logs);
+    mockPrisma.resumeLog.findMany.mockReturnValue(logs);
     // WHEN
     const logList = await resumesRepository.getResumeLogs(id);
     // THEN
