@@ -13,7 +13,6 @@ router.use('/users', userRouter);
 // aws 확인용
 router.get('/health-check', async (req, res, next) => {
   try {
-    // throw new Error('예상치 못한 에러');
     return res.status(200).send('healthy');
   } catch (err) {
     next(err);

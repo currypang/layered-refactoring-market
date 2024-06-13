@@ -15,52 +15,13 @@ import { UsersRepository } from '../repositories/users.repository.js';
 
 const authRouter = express.Router();
 
-const userRepository = new UsersRepository(prisma);
-const authService = new AuthService(userRepository);
+const usersRepository = new UsersRepository(prisma);
+const authService = new AuthService(usersRepository);
 const authController = new AuthController(authService);
 
 // 회원가입 API, joi 미들웨어로 유효성 검사, 에러 미들웨어로 에러처리
 authRouter.post('/sign-up', signUpValidator, authController.signUpUser);
-
-// 로그인 API, joi 미들웨어로 유효성 검사
-authRouter.post('/sign-in', signInValidator, async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
-    //이메일로 조회되지 않거나 비밀번호가 일치하지 앟는 경우, 스키마의 모델 User -> 소문자로 불러옴
-    const user = await prisma.user.findUnique({ where: { email } });
-    // 동기함수인 compareSync도 사용가능
-    const isValidUser = user && (await bcrypt.compare(password, user.password));
-    if (!isValidUser) {
-      return next('invalidSignIn');
-    }
-    // accessToken 생성
-    const accessToken = jwt.sign({ id: user.id }, ENV_CONS.ACCESS_TOKEN_KEY, {
-      expiresIn: AUTH_CONS.ACCESS_EXPIRE_TIME,
-    });
-
-    // refreshToken 생성
-    const refreshToken = jwt.sign({ id: user.id }, ENV_CONS.REFRESH_TOKEN_KEY, {
-      expiresIn: AUTH_CONS.REFRESH_EXPIRE_TIME,
-    });
-
-    // 리프레쉬 토큰 해쉬한번 더하기, soltround는 숫자여야함
-    const hashedRefreshToken = bcrypt.hashSync(refreshToken, ENV_CONS.BCRYPT_ROUND);
-
-    // // 서버에 해쉬된 refreshToken 저장 / upsert 메서드로 리팩토링 - db에 데이트 있으면 업데이트, 없으면 생성
-    await prisma.refreshToken.upsert({
-      where: { userId: user.id },
-      update: { refreshToken: hashedRefreshToken },
-      create: { userId: user.id, refreshToken: hashedRefreshToken },
-    });
-    return res.status(HTTP_STATUS.OK).json({
-      status: HTTP_STATUS.OK,
-      message: MESSAGES.AUTH.SIGN_IN.SUCCEED,
-      data: { accessToken, refreshToken },
-    });
-  } catch (err) {
-    next(err);
-  }
-});
+authRouter.post('/sign-in', signInValidator, authController.signInUser);
 
 // 토큰 재발급 API, refreshToken 인증 미들웨어 사용
 authRouter.post('/refresh', validateRefreshToken, async (req, res, next) => {

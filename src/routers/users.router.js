@@ -6,6 +6,7 @@ const userRouter = express.Router();
 // userRepository는 validateAccessToken에서 사용하여 제외
 const usersController = new UsersController();
 
+// 내 정보 조회 API
 userRouter.get('/me', validateAccessToken, usersController.getUser);
 
 export { userRouter };
