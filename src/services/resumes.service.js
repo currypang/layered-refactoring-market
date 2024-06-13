@@ -93,4 +93,20 @@ export class ResumesService {
     const data = await this.resumesRepository.updateStatus(id, recruiterId, status, existedResume.status, reason);
     return data;
   };
+  // 이력서 로그 목록 조회 로직
+  getResumeLogs = async (id) => {
+    let logList = await this.resumesRepository.getResumeLogs(id);
+    logList = logList.map((log) => {
+      return {
+        id: log.id,
+        recruiterName: log.recruiter.name,
+        resumeId: log.resumeId,
+        oldStatus: log.oldStatus,
+        newStatus: log.newStatus,
+        reason: log.reason,
+        createdAt: log.createdAt,
+      };
+    });
+    return logList;
+  };
 }

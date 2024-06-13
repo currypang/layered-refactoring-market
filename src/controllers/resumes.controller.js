@@ -95,4 +95,17 @@ export class ResumesController {
       next(err);
     }
   };
+  // 이력서 로그 목록 조회
+  getResumeLogs = async (req, res, next) => {
+    try {
+      const id = +req.params.id;
+
+      const logList = await this.resumesService.getResumeLogs(id);
+      return res
+        .status(HTTP_STATUS.OK)
+        .json({ status: HTTP_STATUS.OK, message: MESSAGES.RESUMES.READ_LIST.LOG.SUCCEED, logList });
+    } catch (err) {
+      next(err);
+    }
+  };
 }

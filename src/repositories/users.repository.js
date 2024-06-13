@@ -36,12 +36,14 @@ export class UsersRepository {
       create: { userId, refreshToken: hashedRefreshToken },
     });
   };
+  // refreshToken 조회
   findRefreshToken = async (userId) => {
     const exitedRefreshToken = await this.prisma.refreshToken.findUnique({
       where: { userId },
     });
     return exitedRefreshToken;
   };
+  // refreshToken 삭제
   deleteRefreshToken = async (userId) => {
     const deletedUser = await this.prisma.refreshToken.update({
       where: { userId },
