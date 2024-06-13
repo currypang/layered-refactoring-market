@@ -12,7 +12,8 @@ export class AuthService {
   }
   // 회원 가입 로직
   signUpUser = async (email, name, password) => {
-    const existUser = await this.usersRepository.findUserByEmail(email);
+    const condition = { email };
+    const existUser = await this.usersRepository.findUser(condition);
 
     if (existUser) {
       // 생성된 HttpError.Conflict 인스턴스가 controller catch문의 err로 전달됨
@@ -27,7 +28,8 @@ export class AuthService {
   };
   // 로그인 로직
   signInUser = async (email, password) => {
-    const user = await this.usersRepository.findUserByEmail(email);
+    const condition = { email };
+    const user = await this.usersRepository.findUser(condition);
     //이메일로 조회되지 않거나 비밀번호가 일치하지 앟는 경우
     const isValidUser = user && (await bcrypt.compare(password, user.password));
     if (!isValidUser) {
