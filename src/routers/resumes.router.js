@@ -18,65 +18,8 @@ const resumesController = new ResumesController(resumesService);
 
 // 이력서 생성 API
 resumesRouter.post('/', createResumeValidator, resumesController.createResume);
-
-// 이력서 목록 조회 API, accessToken 미들웨어로 인증
-resumesRouter.get('/list', async (req, res, next) => {
-  try {
-    const { id, role } = req.user;
-    // 삼항연산자로 리팩토링, sort값이 없으면 'desc'
-    // sort가 있으면 소문자 변환, asc이면 asc / undefined거나 다르면 desc
-    const sort = req.query.sort?.toLocaleLowerCase() === 'asc' ? 'asc' : 'desc';
-    const status = req.query.status || '';
-
-    // status 유무에 따른 조건 설정, 없으면 모두 출력 / role에 따라 userId 조건 설정 RECRUITER면 모두 출력
-    //스프레드 문법으로 중복된 부분 리팩토링
-    const condition = {
-      ...(role !== USER_CONS.RECRUITER && { authorId: id }),
-      ...(status && { status }),
-    };
-    // 조건에 따라 쿼리, include 사용해 관계 테이블 데이터 가져오기
-    let resumeList = await prisma.resume.findMany({
-      where: condition,
-      orderBy: { createdAt: sort },
-      include: {
-        author: true,
-      },
-      // map을 쓰지 않고 아래와 같은 형식도 가능하긴 함. 리턴값이 깔끔하진 않음
-      // select: {
-      //   id: true,
-      //   author: {
-      //     select: {
-      //       name: true,
-      //     },
-      //   },
-      //   title: true,
-      //   content: true,
-      //   status: true,
-      //   createdAt: true,
-      //   updatedAt: true,
-      // },
-    });
-    // 목록이라 map 사용
-    resumeList = resumeList.map((resume) => {
-      return {
-        id: resume.id,
-        authorName: resume.author.name,
-        title: resume.title,
-        content: resume.content,
-        status: resume.status,
-        createdAt: resume.createdAt,
-        updatedAt: resume.updatedAt,
-      };
-    });
-    return res.status(HTTP_STATUS.OK).json({
-      status: HTTP_STATUS.OK,
-      message: MESSAGES.RESUMES.READ_LIST.SUCCEED,
-      data: resumeList,
-    });
-  } catch (err) {
-    next(err);
-  }
-});
+// 이력서 목록 조회 API
+resumesRouter.get('/list', resumesController.getAllResumes);
 
 // 이력서 상세 조회 API, accessToken 미들웨어로 인증
 resumesRouter.get('/:id', async (req, res, next) => {
