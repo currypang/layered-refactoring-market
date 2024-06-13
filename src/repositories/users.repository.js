@@ -36,4 +36,19 @@ export class UsersRepository {
       create: { userId, refreshToken: hashedRefreshToken },
     });
   };
+  findRefreshToken = async (userId) => {
+    const exitedRefreshToken = await this.prisma.refreshToken.findUnique({
+      where: { userId },
+    });
+    return exitedRefreshToken;
+  };
+  deleteRefreshToken = async (userId) => {
+    const deletedUser = await this.prisma.refreshToken.update({
+      where: { userId },
+      data: {
+        refreshToken: null,
+      },
+    });
+    return deletedUser;
+  };
 }

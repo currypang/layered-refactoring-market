@@ -47,4 +47,27 @@ export class AuthService {
     await this.usersRepository.upsertRefreshToken(user.id, hashedRefreshToken);
     return { accessToken, refreshToken };
   };
+
+  // 토큰 재발급 로직
+  reNewToken = async (user) => {
+    // accessToken 생성
+    const accessToken = jwt.sign({ id: user.id }, ENV_CONS.ACCESS_TOKEN_KEY, {
+      expiresIn: AUTH_CONS.ACCESS_EXPIRE_TIME,
+    });
+
+    // refreshToken 생성
+    const refreshToken = jwt.sign({ id: user.id }, ENV_CONS.REFRESH_TOKEN_KEY, {
+      expiresIn: AUTH_CONS.REFRESH_EXPIRE_TIME,
+    });
+    // 리프레쉬 토큰 해쉬한번 더하기
+    const hashedRefreshToken = bcrypt.hashSync(refreshToken, ENV_CONS.BCRYPT_ROUND);
+    await this.usersRepository.upsertRefreshToken(user.id, hashedRefreshToken);
+    return { accessToken, refreshToken };
+  };
+  // 로그 아웃 로직
+  signOut = async (userId) => {
+    const deletedUser = await this.usersRepository.deleteRefreshToken(userId);
+    console.log(deletedUser);
+    return deletedUser.userId;
+  };
 }
