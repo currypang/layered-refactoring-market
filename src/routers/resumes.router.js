@@ -26,60 +26,13 @@ resumesRouter.get('/:id', resumesController.getResume);
 resumesRouter.put('/:id', updateResumeValidator, resumesController.updateResume);
 // 이력서 삭제 API
 resumesRouter.delete('/:id', resumesController.deleteResume);
-
-// 이력서 지원 상태 변경 API, accessToken 미들웨어, 역할 인증 미들웨어로 인증, joi 미들웨어로 유효성 검사
+// 이력서 지원 상태 변경 API
 resumesRouter.patch(
   '/:id/status',
   requireRoles(USER_CONS.RECRUITER),
   updateResumeStatusValidator,
-  async (req, res, next) => {
-    try {
-      // 전달받은 이력서 ID, 역할, 수정할 상태와 사유.
-      const id = +req.params.id;
-      const recruiterId = req.user.id;
-      const { status, reason } = req.body;
-
-      await prisma.$transaction(async (tx) => {
-        const existedResume = await prisma.resume.findUnique({
-          where: { id },
-          // 이력서 정보가 없는 경우
-        });
-        if (!existedResume) {
-          next('notExistResume');
-        }
-        console.log('111');
-        // 이력서 지원 상태 수정
-        const updatedResume = await tx.resume.update({
-          where: { id },
-          data: {
-            status,
-          },
-        });
-        // throw new Error('일부러 만든 에러');
-
-        // 이력서 로그 생성
-        const data = await tx.resumeLog.create({
-          data: {
-            recruiterId,
-            resumeId: existedResume.id,
-            oldStatus: existedResume.status,
-            newStatus: updatedResume.status,
-            reason,
-          },
-        });
-
-        return res.status(HTTP_STATUS.OK).json({
-          status: HTTP_STATUS.OK,
-          message: MESSAGES.RESUMES.UPDATE.STATUS.SUCCEED,
-          data,
-        });
-      });
-    } catch (err) {
-      next(err);
-    }
-  },
+  resumesController.updateStatus,
 );
-
 // 이력서 로그 목록 조회 API, accessToken 미들웨어, 역할 인증 미들웨어로 인증
 resumesRouter.get('/:id/logs', requireRoles(USER_CONS.RECRUITER), async (req, res, next) => {
   try {

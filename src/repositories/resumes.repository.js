@@ -49,4 +49,28 @@ export class ResumesRepository {
     });
     return deletedResume;
   };
+  // 이력서 상태 변경
+  updateStatus = async (id, recruiterId, newStatus, oldStatus, reason) => {
+    let data;
+    await this.prisma.$transaction(async (tx) => {
+      // 이력서 지원 상태 수정
+      await tx.resume.update({
+        where: { id },
+        data: {
+          status: newStatus,
+        },
+      });
+      // 이력서 로그 생성
+      data = await tx.resumeLog.create({
+        data: {
+          recruiterId,
+          resumeId: id,
+          oldStatus,
+          newStatus,
+          reason,
+        },
+      });
+    });
+    return data;
+  };
 }
