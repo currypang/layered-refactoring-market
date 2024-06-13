@@ -24,4 +24,14 @@ export class ResumesRepository {
     });
     return resumeList;
   };
+  // 이력서 상세 조회
+  getResume = async (condition) => {
+    const resume = await this.prisma.resume.findFirst({
+      where: condition,
+      include: {
+        author: true,
+      },
+    });
+    return resume;
+  };
 }

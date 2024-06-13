@@ -32,14 +32,8 @@ export const errorHandler = (err, req, res, next) => {
 
   // 나머지 에러는 API 리팩토링 하면서 정리
 
-  // auth 로그인 이메일로 조회안되거나 비밀번호가 일치하지 않을 경우
-
   // 이력서 상세 목록 조회, 이력서 수정, 이력서 삭제, 이력서 지원 상태 변경 API에서 이력서 목록이 없을 경우
-  if (err === 'notExistResume') {
-    return res
-      .status(HTTP_STATUS.NOT_FOUND)
-      .json({ status: HTTP_STATUS.NOT_FOUND, message: MESSAGES.RESUMES.COMMON.NOT_FOUND });
-  }
+
   // 제목, 자기소개 둘다 없는 경우
   if (err === 'emptyUpdateResume') {
     return res

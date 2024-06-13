@@ -34,4 +34,19 @@ export class ResumesController {
       next(err);
     }
   };
+  // 이력서 상세 조회
+  getResume = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const { role } = req.user;
+      const authorId = req.user.id;
+
+      const resume = await this.resumesService.getResume(id, role, authorId);
+      return res
+        .status(HTTP_STATUS.OK)
+        .json({ status: HTTP_STATUS.OK, message: MESSAGES.RESUMES.READ_DETAIL.SUCCEED, data: resume });
+    } catch (err) {
+      next(err);
+    }
+  };
 }
