@@ -49,4 +49,20 @@ export class ResumesController {
       next(err);
     }
   };
+  // 이력서 수정
+  updateResume = async (req, res, next) => {
+    try {
+      const id = +req.params.id;
+      const authorId = req.user.id;
+      const { title, content } = req.body;
+
+      const updatedResume = await this.resumesService.updateResume(id, authorId, title, content);
+
+      return res
+        .status(HTTP_STATUS.OK)
+        .json({ status: HTTP_STATUS.OK, message: MESSAGES.RESUMES.UPDATE.SUCCEED, data: updatedResume });
+    } catch (err) {
+      next(err);
+    }
+  };
 }
