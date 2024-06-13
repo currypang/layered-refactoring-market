@@ -22,46 +22,8 @@ resumesRouter.post('/', createResumeValidator, resumesController.createResume);
 resumesRouter.get('/list', resumesController.getAllResumes);
 // 이력서 상세 조회 API
 resumesRouter.get('/:id', resumesController.getResume);
-
-// 이력서 수정 API, accessToken 미들웨어로 인증
-resumesRouter.put('/:id', updateResumeValidator, async (req, res, next) => {
-  try {
-    // prisma 메서드 사용위해 id 값 숫자형으로 변환
-    const id = +req.params.id;
-    const authorId = req.user.id;
-    const { title, content } = req.body;
-
-    // 이력서 id, 작성자 id가 일치하는 이력서
-    const resume = await prisma.resume.findUnique({
-      where: { id, authorId },
-    });
-    // 이력서가 없거나, 작성자가 다를 때
-    if (!resume) {
-      // return 없을 시 update 에러 발생
-      return next('notExistResume');
-    }
-    // 이력서 수정 - "" 일때 덮어씌워져서 || 연산자로 title이 없을때는 title의 값 설정
-    const updatedResume = await prisma.resume.update({
-      where: { id: id, authorId },
-      data: {
-        title: title || resume.title,
-        content: content || resume.content,
-      },
-      //아래 방식도 가능
-      // data: {
-      //   ...(title && { title }),
-      //   ...(content && { content }),
-      // },
-    });
-    return res.status(HTTP_STATUS.OK).json({
-      status: HTTP_STATUS.OK,
-      message: MESSAGES.RESUMES.UPDATE.SUCCEED,
-      data: updatedResume,
-    });
-  } catch (err) {
-    next(err);
-  }
-});
+// 이력서 수정 API
+resumesRouter.put('/:id', updateResumeValidator, resumesController.updateResume);
 
 // 이력서 삭제 API, accessToken 미들웨어로 인증
 resumesRouter.delete('/:id', async (req, res, next) => {

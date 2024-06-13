@@ -55,4 +55,20 @@ export class ResumesService {
     };
     return resume;
   };
+  // 이력서 수정 로직
+  updateResume = async (id, authorId, title, content) => {
+    const condition = { id, authorId };
+    const resume = await this.resumesRepository.getResume(condition);
+
+    if (!resume) {
+      throw new HttpError.NotFound(MESSAGES.RESUMES.COMMON.NOT_FOUND);
+    }
+    const updatedContent = {
+      title: title || resume.title,
+      content: content || resume.content,
+    };
+    const updatedResume = await this.resumesRepository.updateResume(condition, updatedContent);
+
+    return updatedResume;
+  };
 }

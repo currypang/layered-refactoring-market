@@ -34,4 +34,12 @@ export class ResumesRepository {
     });
     return resume;
   };
+  // 이력서 수정
+  updateResume = async (condition, updatedContent) => {
+    const updatedResume = await this.prisma.resume.update({
+      where: condition,
+      data: updatedContent,
+    });
+    return updatedResume;
+  };
 }
